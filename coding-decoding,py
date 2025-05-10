@@ -1,43 +1,47 @@
 import random
 import string
 
-# Prompt user for the message to encode or decode
-st = input("Enter Message: ")
-words = st.split(" ")
+def safe_input(prompt):
+    try:
+        return input(prompt)
+    except Exception:
+        return ""
 
-# Ask whether to encode (1) or decode (0)
-coding = input("1 for Coding or 0 for Decoding: ")
-coding = True if coding == "1" else False
+def encode_decode():
+    st = safe_input("Enter Message: ").strip()
+    if not st:
+        print("No message provided.")
+        return
 
-if coding:
-    # Encoding Process
+    words = st.split()
+
+    coding_input = safe_input("1 for Coding or 0 for Decoding: ").strip()
+    coding = coding_input == "1"
+
     nwords = []
     for word in words:
-        if len(word) >= 3:
-            # Generate two random strings of length 3
-            r1 = ''.join(random.choices(string.ascii_letters + string.digits, k=3))
-            r2 = ''.join(random.choices(string.ascii_letters + string.digits, k=3))
-            # Rearrange the word and add the random strings
-            stnew = r1 + word[1:] + word[0] + r2
-            nwords.append(stnew)
+        if coding:
+            # Encoding
+            if len(word) >= 3:
+                r1 = ''.join(random.choices(string.ascii_letters + string.digits, k=3))
+                r2 = ''.join(random.choices(string.ascii_letters + string.digits, k=3))
+                stnew = r1 + word[1:] + word[0] + r2
+                nwords.append(stnew)
+            else:
+                nwords.append(word[::-1])
         else:
-            # Reverse short words
-            nwords.append(word[::-1])
-    
-    # Join all the encoded words and print
-    print(" ".join(nwords))
-else:
-    # Decoding Process
-    nwords = []
-    for word in words:
-        if len(word) >= 3:
-            # Remove the 3 random characters and swap the first and last characters
-            stnew = word[3:-3]  # Remove the random prefix and suffix
-            stnew = stnew[-1] + stnew[:-1]  # Swap the first and last character
-            nwords.append(stnew)
-        else:
-            # Reverse short words
-            nwords.append(word[::-1])
-    
-    # Join all the decoded words and print
-    print(" ".join(nwords))
+            # Decoding
+            if len(word) >= 6:
+                try:
+                    stnew = word[3:-3]
+                    stnew = stnew[-1] + stnew[:-1]
+                    nwords.append(stnew)
+                except Exception:
+                    nwords.append(word)
+            else:
+                nwords.append(word[::-1])
+
+    print("Output:", " ".join(nwords))
+
+# Run the function
+encode_decode()
